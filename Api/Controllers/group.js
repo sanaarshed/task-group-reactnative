@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 const group = mongoose.model("Groups");
 
 exports.all = function (req, res) {
+  console.log(group.schema);
   return res.json();
 };
 exports.show = function (req, res) {
