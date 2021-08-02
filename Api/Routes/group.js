@@ -14,25 +14,13 @@ module.exports = function (app) {
   //     .put(todoList.update_a_task)
   //     .delete(todoList.delete_a_task);
 
-  app
-    .route("/groups")
-    .get(function (req, res) {
-      return res.json("get all records");
-    })
-    .post(function (req, res) {
-      return res.json("post successfully");
-    });
+  var controller = require("../Controllers/group");
+
+  app.route("/groups").get(controller.all).post(controller.create);
 
   app
     .route("/groups/:groupId")
-    .get(function (req, res) {
-      const id = req.params.groupId;
-      return res.json();
-    })
-    .put(function (req, res) {
-      return res.json("update the single record id " + req.params.groupId);
-    })
-    .delete(function (req, res) {
-      return res.json("delete one record of id: " + req.params.groupId);
-    });
+    .get(controller.show)
+    .put(controller.update)
+    .delete(controller.delete);
 };
