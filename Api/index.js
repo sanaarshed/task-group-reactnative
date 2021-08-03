@@ -3,7 +3,11 @@ var express = require("express"),
   mongoose = require("mongoose"),
   Group = require("./Models/group"),
   Task = require("./Models/task"),
+  //bodyParser = require("body-parser"),
   port = process.env.PORT || 3000;
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 var taskRoutes = require("./Routes/task"); //importing route
 var groupRoutes = require("./Routes/group"); //importing route
