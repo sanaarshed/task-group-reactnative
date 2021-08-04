@@ -1,8 +1,7 @@
 "use strict";
 
-var mongoose = require("mongoose");
-var ApiResponse = require("../Models/apiResponse");
-
+const mongoose = require("mongoose");
+const ApiResponse = require("../Models/apiResponse");
 const group = mongoose.model("Groups");
 
 exports.all = function (req, res) {

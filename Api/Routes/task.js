@@ -7,30 +7,17 @@
 // DELETE:  groups/{groupId}/tasks/{taskId}
 
 "use strict";
+const controller = require("../Controllers/task");
+
 module.exports = function (app) {
   app
     .route("/groups/:groupId/tasks")
-    .get(function (req, res) {
-      return res.json("get all tasks");
-    })
-    .post(function (req, res) {
-      return res.json("post a task");
-    });
+    .get(controller.all)
+    .post(controller.create);
 
   app
     .route("/groups/:groupId/tasks/:taskId")
-    .get(function (req, res) {
-      return res.json("task id " + req.params.taskId);
-    })
-    .put(function (req, res) {
-      return res.json("update task of id" + req.params.taskId);
-    })
-    .delete(function (req, res) {
-      return res.json(
-        "update, task of id:" +
-          req.params.taskId +
-          "groupID : " +
-          req.params.groupId
-      );
-    });
+    .get(controller.show)
+    .put(controller.update)
+    .delete(controller.delete);
 };
