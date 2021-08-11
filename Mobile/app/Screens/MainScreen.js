@@ -1,72 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
+  ActivityIndicator,
   Alert,
   Button,
   FlatList,
   Modal,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 import Dialog from "react-native-dialog";
 
-// import NavigationContainer from "react-navigation/native";
-// import { createNavigationStack } from "react-navigation/stack";
-
 import Screen from "../Components/Screen";
 import AddButton from "../Components/AddButton";
-import AppHeader from "../Components/AppHeader";
 import Group from "../Components/Group";
+import GroupService from "../Services/group";
+import { AppColors } from "../assets/colors";
 
-const data = [
-  {
-    id: "1",
-    title: "List 1",
-    task: [
-      {
-        id: 5,
-        title: "task 1",
-      },
-      {
-        id: 6,
-        title: "task 2",
-      },
-      {
-        id: 7,
-        title: "task 3",
-      },
-    ],
-  },
-  {
-    id: "2",
-    title: "List 2",
-    task: [
-      {
-        id: 1,
-        title: "task 1",
-      },
-      {
-        id: 2,
-        title: "task 2",
-      },
-      {
-        id: 3,
-        title: "task 3",
-      },
-    ],
-  },
-];
-
-export default function MainScreen() {
+export default function MainScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [refresh, setrefresh] = useState(false);
-  const [groups, setGroup] = useState(data);
+  const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [groups, setGroups] = useState([]);
 
   const [title, setTitle] = useState("title 1");
   const [item, setItem] = useState("");
+
+  useEffect(() => {
+    showAll();
+    // loadGroups();
+  }, [refresh]);
 
   function showDialog(v = true) {
     setDialogVisible(v);
@@ -74,33 +39,69 @@ export default function MainScreen() {
   function showModal(v = true) {
     setModalVisible(v);
   }
+
+  const showAll = async () => {
+    const result = await new GroupService().showAll();
+    if (result.success) {
+      setGroups(result.data);
+    } else {
+      alert("Error: " + result);
+    }
+    setLoading(false);
+    setRefresh(false);
+  };
+  const create = (data) => {
+    const result = new GroupService().create(data);
+    result.then((res) => {
+      if (!res) {
+        alert("Error inserting ");
+      }
+    });
+    setRefresh(true);
+  };
+  const update = (data) => {
+    data = `{"name" :" ${data}"}`;
+    const result = new GroupService().update(data, item.id);
+    result.then((res) => {
+      if (!res) {
+        alert("Error Updating");
+      }
+    });
+    setItem(null);
+    setRefresh(true);
+  };
+
   function handleDelete() {
-    setGroup(groups.filter((m) => m.id != item.id));
-    setItem("");
-    Alert.alert("List: '" + item.title + "' is deleted");
-    setModalVisible(false);
+    Alert.alert("Delete List", "Are you sure want to delete the list? ", [
+      {
+        text: "Cancel",
+      },
+      {
+        text: "OK",
+        onPress: () => {
+          const result = new GroupService().delete(item.id);
+        },
+      },
+    ]);
+    setRefresh(true);
+    setItem(null);
+    showModal(false);
   }
   function handleRename() {
     //console.log("rename");
-    console.log("item to rename : " + item.id);
-    const group = groups.find((m) => m.id === item.id);
-    group.title = title;
-    //groups.push(group);
+    update(title);
     showDialog(false);
-    setModalVisible(false);
+    showModal(false);
   }
 
   const add = () => {
-    //console.log("item pushed");
     const newGroup = {
-      id: "9",
-      title: title,
+      name: title,
       task: [{}],
     };
-    groups.push(newGroup);
-    setGroup(groups);
-    //console.log("item pushed");
-    setDialogVisible(false);
+    create(newGroup);
+    setGroups(groups);
+    showDialog(false);
   };
 
   function renderDialog() {
@@ -110,10 +111,9 @@ export default function MainScreen() {
           {item ? (
             <>
               <Dialog.Title>Rename the List</Dialog.Title>
-              <Dialog.Input
-                onChangeText={(value) => setTitle(value)}
-                placeholder={item.title}
-              />
+              <Dialog.Input onChangeText={(value) => setTitle(value)}>
+                {item.name}
+              </Dialog.Input>
             </>
           ) : (
             <>
@@ -127,7 +127,7 @@ export default function MainScreen() {
           <Dialog.Button
             label="Cancel"
             onPress={() => {
-              setDialogVisible(false);
+              showDialog(false);
             }}
           />
           <Dialog.Button
@@ -148,18 +148,26 @@ export default function MainScreen() {
         visible={modalVisible}
         //hard back key press controll
         onRequestClose={() => {
-          setModalVisible(false);
+          showModal(false);
         }}
       >
         <TouchableWithoutFeedback
           onPress={() => {
-            setModalVisible(false);
+            showModal(false);
           }}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modelButtons}>
-              <Button title={"Rename"} onPress={showDialog} />
-              <Button title={"Delete"} onPress={() => handleDelete()} />
+              <Button
+                title={"Rename"}
+                onPress={showDialog}
+                color={AppColors.appColor}
+              />
+              <Button
+                title={"Delete"}
+                onPress={() => handleDelete()}
+                color={AppColors.appColor}
+              />
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -168,58 +176,49 @@ export default function MainScreen() {
   }
   return (
     <Screen>
-      <AppHeader title="TODO APP" />
-      <View
-        style={{
-          padding: 10,
-        }}
-      >
-        <FlatList
-          // keyExtractor={({ id }) => id.toString()}
-          data={groups}
-          renderItem={({ item }) => (
-            <Group
-              onPress={() => {
-                Alert.alert(item.title);
-                // setItem(item);
-                // console.log(item);
-              }}
-              onPressDots={() => {
-                setModalVisible(true), setItem(item);
-              }}
-              title={item.title}
-            />
-          )}
-          refreshing={refresh}
-          onRefresh={() => groups}
-        />
-
-        {/* {groups.map((item) => (
-          <Group title={item.title} onPressDots={setModalVisible(true)} />
-        ))} */}
-        <AddButton
-          onPress={showDialog}
-          //otherStyle={{ position: "absolute" }}
-        />
-        {renderDialog()}
-        {renderModal()}
+      <View style={styles.container}>
+        {loading ? (
+          <ActivityIndicator size={"large"} color={"gray"} />
+        ) : (
+          <FlatList
+            style={{ flex: 1, minHeight: 100 }}
+            // keyExtractor={({ id }) => id.toString()}
+            data={groups}
+            renderItem={({ item }) => (
+              <Group
+                onPress={() => {
+                  navigation.navigate("TaskScreen", {
+                    GroupId: item.id,
+                  });
+                }}
+                onPressDots={() => {
+                  setItem(item), showModal(true);
+                }}
+                title={item.name}
+              />
+            )}
+            refreshing={refresh}
+            onRefresh={() => setRefresh(true)}
+          />
+        )}
+        <AddButton onPress={showDialog} />
       </View>
+      {renderDialog()}
+      {renderModal()}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
     flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "space-between",
   },
   modalContainer: {
-    flex: 1,
-    height: "100%",
     margin: 0,
+    flex: 1,
+    backgroundColor: AppColors.modal,
     justifyContent: "flex-end",
-    backgroundColor: "#00000060",
   },
   modelButtons: {
     height: 120,
@@ -227,7 +226,7 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: "space-evenly",
     alignItems: "stretch",
-    backgroundColor: "white",
+    backgroundColor: AppColors.tint,
     alignSelf: "stretch",
   },
 });

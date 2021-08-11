@@ -16,6 +16,7 @@ function AppHeader({ back, title, dots }) {
         style={{
           color: "white",
           fontWeight: "200",
+
           fontSize: 20,
         }}
       >

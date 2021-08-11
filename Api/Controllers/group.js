@@ -2,11 +2,12 @@
 
 const mongoose = require("mongoose");
 const ApiResponse = require("../Models/apiResponse");
-const group = mongoose.model("Groups");
 
-exports.all = function (req, res) {
+const Group = mongoose.model("Groups");
+
+exports.showAll = function (req, res) {
   try {
-    group.find({}, function (err, data) {
+    Group.find({}, function (err, data) {
       if (err) res.json(new ApiResponse(null, err, false));
       const groups = data.map((element) => {
         return {
@@ -16,16 +17,21 @@ exports.all = function (req, res) {
           tasks: element.tasks,
         };
       });
-
       res.json(new ApiResponse(groups, "Data retreved"));
-    });
+    }).catch((e) => console.log("Exception in controller :", e));
   } catch (e) {
-    return res.json(new ApiResponse(null, e.message, false));
+    return res.json(
+      new ApiResponse(
+        null,
+        "exception in group Controllers  -->  " + e.message,
+        false
+      )
+    );
   }
 };
 exports.show = function (req, res) {
   try {
-    group.findById(req.params.groupId, function (err, data) {
+    Group.findById(req.params.groupId, function (err, data) {
       if (err) return res.json(new ApiResponse(null, err, false));
       const group = {
         id: data.id,
@@ -39,14 +45,14 @@ exports.show = function (req, res) {
 };
 
 exports.create = function (req, res) {
-  // ....
   try {
-    var data = new group(req.body);
+    var data = new Group(req.body);
     data.save(function (err, data) {
       if (err) return res.json(new ApiResponse(null, "Data not saved.", false));
       const group = {
         id: data.id,
         name: data.name,
+        tasks: data.tasks,
       };
       return res.json(new ApiResponse(group, "Record saved successfully"));
     });
@@ -57,7 +63,7 @@ exports.create = function (req, res) {
 
 exports.update = function (req, res) {
   try {
-    group.findOneAndUpdate(
+    Group.findOneAndUpdate(
       { _id: req.params.groupId },
       req.body,
       { new: true },
@@ -72,8 +78,8 @@ exports.update = function (req, res) {
 };
 
 exports.delete = function (req, res) {
-  group.remove({ _id: req.params.groupId }, function (err, data) {
+  Group.remove({ _id: req.params.groupId }, function (err, data) {
     if (err) return res.json(new ApiResponse(null, err, false));
-    return res.json(new ApiResponse(null, "Record deleted"));
+    return res.json(new ApiResponse(null, "Record deleted", true));
   });
 };

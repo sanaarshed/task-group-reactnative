@@ -7,6 +7,7 @@ var TaskSchema = new Schema({
     type: String,
     required: "Title is required",
   },
+
   created_date: {
     type: Date,
     default: Date.now,
@@ -16,6 +17,11 @@ var TaskSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+
+  groupId: {
+    type: Schema.Types.ObjectId,
+    ref: "Groups",
+  },
 });
 
-module.exports = mongoose.model("Task", TaskSchema);
+module.exports = mongoose.model("Tasks", TaskSchema);

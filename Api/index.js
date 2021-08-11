@@ -1,20 +1,21 @@
 var express = require("express"),
   app = express(),
   mongoose = require("mongoose"),
-  Group = require("./Models/group"),
   Task = require("./Models/task"),
+  Group = require("./Models/group"),
   //bodyParser = require("body-parser"),
   port = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-var taskRoutes = require("./Routes/task"); //importing route
-var groupRoutes = require("./Routes/group"); //importing route
+//importing route/endpoints
+var taskRoutes = require("./Routes/task");
+var groupRoutes = require("./Routes/group");
 
 // Routes Configuration
 taskRoutes(app); //register the route
-groupRoutes(app); //register the route
+groupRoutes(app);
 
 // Mongo Connection
 const mongoUri =
@@ -23,6 +24,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(
   mongoUri,
   {
+    useFindAndModify: false,
     useNewUrlParser: true,
     useUnifiedTopology: true,
   },

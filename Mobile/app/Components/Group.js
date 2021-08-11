@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AppColors } from "../assets/colors";
 
 function Group({ title = "", onPress, onPressDots }) {
   return (
@@ -28,10 +29,10 @@ function Group({ title = "", onPress, onPressDots }) {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 50,
+    height: 70,
     borderRadius: 10,
     borderWidth: 1,
-    backgroundColor: "#e2e2e2",
+    backgroundColor: AppColors.tint,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
   },
   checkBox: {},
   text: {
+    color: AppColors.text,
     fontSize: 20,
   },
   group: {

@@ -1,9 +1,9 @@
 "use strict";
 
 module.exports = class ApiResponse {
-  constructor(data, message, isSuccess = true) {
+  constructor(data, message, success = true) {
     this.data = data;
     this.message = message;
-    this.isSuccess = isSuccess;
+    this.success = success;
   }
 };

@@ -16,11 +16,14 @@ module.exports = function (app) {
 
   var controller = require("../Controllers/group");
 
-  app.route("/groups").get(controller.all).post(controller.create);
+  app.route("/groups").get(controller.showAll).post(controller.create);
 
   app
     .route("/groups/:groupId")
     .get(controller.show)
     .put(controller.update)
     .delete(controller.delete);
+
+  // app
+  // .route("/groups/:groupId/tasks")
 };

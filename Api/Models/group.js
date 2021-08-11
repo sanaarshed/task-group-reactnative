@@ -7,16 +7,13 @@ var GroupSchema = new Schema({
     type: String,
     required: "Name is required",
   },
+
   created_date: {
     type: Date,
     default: Date.now,
   },
-  tasks: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "task",
-    },
-  ],
+  // Children
+  tasks: [mongoose.model("Tasks").schema],
 });
 
 module.exports = mongoose.model("Groups", GroupSchema);

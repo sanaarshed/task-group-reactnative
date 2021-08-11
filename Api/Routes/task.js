@@ -1,4 +1,6 @@
 // TASK ROUTES (END POINTS)
+//GET:     groups/{gr}
+
 // GET:     groups/{groupId}/tasks,
 // POST:    groups/{groupId}/tasks
 
@@ -12,7 +14,7 @@ const controller = require("../Controllers/task");
 module.exports = function (app) {
   app
     .route("/groups/:groupId/tasks")
-    .get(controller.all)
+    .get(controller.showAll)
     .post(controller.create);
 
   app
