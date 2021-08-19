@@ -2,14 +2,11 @@ import { actionTypes } from "../contants/actionType";
 
 const apiUrl = "https://sana-todo-api.herokuapp.com/groups";
 
-export const getGroups = async (dispatch) => {
-  dispatch({
-    type: actionTypes.GET_ONE_GROUP_REQ,
-  });
+export const getGroups = () => async (dispatch) => {
+  dispatch({ type: GET_POSTS_BULK_REQUEST });
+
   try {
-    const response = await fetch(apiUrl, {
-      method: "GET",
-    });
+    const response = await fetch(apiUrl);
     const json = await response.json();
     if (json) {
       dispatch({
@@ -17,7 +14,10 @@ export const getGroups = async (dispatch) => {
         payload: "data fetched : " + json,
       });
     } else {
-      console.log("Error in group Actions. res is null ");
+      dispatch({
+        type: actionTypes.GET_GROUPS_FAIL,
+        payload: "the data is null",
+      });
     }
   } catch (e) {
     dispatch({
@@ -26,6 +26,7 @@ export const getGroups = async (dispatch) => {
     });
   }
 };
-export const getGroupsfunc = (dispatch) => {
+
+export const getGroupsFunc = (dispatch) => {
   return () => getGroups(dispatch);
 };

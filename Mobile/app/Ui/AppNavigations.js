@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-
-import { useSelector } from "react-redux";
 
 import MainScreen from "../Screens/MainScreen";
 import TaskScreen from "../Screens/TaskScreen";
 import { AppColors } from "../assets/colors";
 import TestScreen from "../Screens/TestScreen";
+import { actionTypes } from "../redux/contants/actionType";
 
 const Stack = createStackNavigator();
 
 export default function AppNavigations() {
-  const storeValue = useSelector((state) => state);
-  console.log(storeValue.title);
+  // const title = useSelector((state) => state.headerTitleReducer);
+  // const storeValue = useSelector((state) => state.groups);
+  // console.log(storeValue);
+
   return (
     <NavigationContainer>
       <Stack.Navigator

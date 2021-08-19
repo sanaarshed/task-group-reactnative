@@ -1,8 +1,13 @@
 import { reducers } from "./reducers/rootReducers";
 import headerTitleReducer from "./reducers/headerTitleReducer";
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
 import groupReducer from "./reducers/groupReducer";
+import thunk from "redux-thunk";
 
 const store = createStore(groupReducer);
-store.subscribe(() => console.log(store.getState()));
+// const store = createStore(groupReducer, applyMiddleware(thunk));
+
+// const store = createStore(reducers);
+// store.subscribe(() => console.log(store.getState()));
+
 export default store;

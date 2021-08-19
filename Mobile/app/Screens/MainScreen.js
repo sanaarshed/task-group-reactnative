@@ -12,7 +12,7 @@ import {
   Text,
 } from "react-native";
 import Dialog from "react-native-dialog";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Screen from "../Components/Screen";
 import AddButton from "../Components/AddButton";
@@ -31,10 +31,8 @@ export default function MainScreen({ navigation }) {
   const [title, setTitle] = useState("title 1");
   const [item, setItem] = useState("");
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
-    showAll();
+    // showAll();
   }, [refresh]);
 
   function showDialog(v = true) {

@@ -8,27 +8,39 @@ const initialState = {
   },
 };
 
-function groupReducer(state = initialState, action) {
-  console.log("group reducer action payload : ", action);
+function groupReducer(state = initialState.groups, action) {
+  console.log("group reducer action payload : ", action.payload);
+  // console.log("group reducer state : ", state);
   switch (action.type) {
     case actionTypes.GET_GROUPS_REQ:
-      return { ...state, groups: { isLoading: true, error: null, data: null } };
+      return {
+        ...state,
+        group: {
+          isLoading: true,
+          error: null,
+          data: null,
+        },
+      };
     case actionTypes.GET_GROUPS_SUCCESS:
       return {
         ...state,
-        groups: {
+        byBulk: {
           isLoading: false,
-          error: null,
-          data: " action.payload",
+          error: false,
+          data: action.payload,
         },
       };
     case actionTypes.GET_GROUPS_FAIL:
       return {
         ...state,
-        groups: { isLoading: false, error: action.payload, data: null },
+        byBulk: {
+          isLoading: false,
+          error: action.payload,
+          data: false,
+        },
       };
     default:
-      state;
+      return state;
   }
 }
 export default groupReducer;
