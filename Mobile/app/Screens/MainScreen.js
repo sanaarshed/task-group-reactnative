@@ -9,14 +9,17 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  Text,
 } from "react-native";
 import Dialog from "react-native-dialog";
+import { useDispatch } from "react-redux";
 
 import Screen from "../Components/Screen";
 import AddButton from "../Components/AddButton";
 import Group from "../Components/Group";
 import GroupService from "../Services/group";
 import { AppColors } from "../assets/colors";
+import { actionTypes } from "../redux/contants/actionType";
 
 export default function MainScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -28,9 +31,10 @@ export default function MainScreen({ navigation }) {
   const [title, setTitle] = useState("title 1");
   const [item, setItem] = useState("");
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     showAll();
-    // loadGroups();
   }, [refresh]);
 
   function showDialog(v = true) {
@@ -39,6 +43,10 @@ export default function MainScreen({ navigation }) {
   function showModal(v = true) {
     setModalVisible(v);
   }
+
+  const setHeaderTitle = (title) => {
+    dispatch({ type: actionTypes.HEADER_TITLE, payload: title });
+  };
 
   const showAll = async () => {
     const result = await new GroupService().showAll();
@@ -50,6 +58,7 @@ export default function MainScreen({ navigation }) {
     setLoading(false);
     setRefresh(false);
   };
+
   const create = (data) => {
     const result = new GroupService().create(data);
     result.then((res) => {
@@ -59,6 +68,7 @@ export default function MainScreen({ navigation }) {
     });
     setRefresh(true);
   };
+
   const update = (data) => {
     data = `{"name" :" ${data}"}`;
     const result = new GroupService().update(data, item.id);
@@ -80,13 +90,14 @@ export default function MainScreen({ navigation }) {
         text: "OK",
         onPress: () => {
           const result = new GroupService().delete(item.id);
+          if (result) setRefresh(true);
         },
       },
     ]);
-    setRefresh(true);
     setItem(null);
     showModal(false);
   }
+
   function handleRename() {
     //console.log("rename");
     update(title);
@@ -140,6 +151,7 @@ export default function MainScreen({ navigation }) {
       </View>
     );
   }
+
   function renderModal() {
     return (
       <Modal
@@ -174,6 +186,7 @@ export default function MainScreen({ navigation }) {
       </Modal>
     );
   }
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -187,6 +200,7 @@ export default function MainScreen({ navigation }) {
             renderItem={({ item }) => (
               <Group
                 onPress={() => {
+                  setHeaderTitle(item.name);
                   navigation.navigate("TaskScreen", {
                     GroupId: item.id,
                   });
@@ -205,6 +219,7 @@ export default function MainScreen({ navigation }) {
       </View>
       {renderDialog()}
       {renderModal()}
+      {/* */}
     </Screen>
   );
 }

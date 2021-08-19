@@ -8,12 +8,15 @@ var TaskSchema = new Schema({
     required: "Title is required",
   },
 
-  created_date: {
-    type: Date,
-    default: Date.now,
+  ischecked: {
+    type: Boolean,
   },
 
   due_date: {
+    type: Date,
+  },
+
+  created_date: {
     type: Date,
     default: Date.now,
   },

@@ -6,13 +6,16 @@ import {
   Text,
   View,
   Alert,
+  Paragraph,
 } from "react-native";
 import Dialog from "react-native-dialog";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import Task from "../Components/Task";
 import Screen from "../Components/Screen";
 import AddButton from "../Components/AddButton";
 import TaskService from "../Services/task";
+import { AppColors } from "../assets/colors";
 
 const data = {
   data: Array[
@@ -29,12 +32,18 @@ const data = {
 };
 
 export default function TaskScreen({ route }) {
-  const [tasks, setTasks] = useState(data);
   const [visible, setDialogVisible] = useState(false);
+  const [dateVisible, setDateVisible] = useState(false);
+
+  const [date, setDate] = useState(null);
+  const [tasks, setTasks] = useState(data);
+
   const [title, setTitle] = useState("");
   const [item, setItem] = useState("");
+
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const groupId = route.params.GroupId;
 
   useEffect(() => {
@@ -66,27 +75,31 @@ export default function TaskScreen({ route }) {
 
   const update = () => {
     const url =
-      "http://192.168.10.10:3000/groups/" + groupId + "/tasks/" + item._id;
-
+      "https://sana-todo-api.herokuapp.com/groups/" +
+      groupId +
+      "/tasks/" +
+      item._id;
     fetch(url, {
       method: "PUT",
       headers: { "Content-type": "application/json" },
-      body: JSON.stringify({ title: title }),
+      body: JSON.stringify({ title: title, due_date: date }),
     })
       .then(async (response) => {
         const d = await response.json();
         if (!d) {
           alert("Error Updating data");
-        } else setItem("");
+        } else setItem(null);
       })
       .catch((e) => {
         alert("Error: ", e);
       });
+    setDate(null);
     setRefresh(true);
   };
 
   const deleteData = (id) => {
-    const url = "http://192.168.10.10:3000/groups/" + groupId + "/tasks/" + id;
+    const url =
+      "https://sana-todo-api.herokuapp.com/groups/" + groupId + "/tasks/" + id;
     fetch(url, {
       method: "DELETE",
     })
@@ -97,25 +110,36 @@ export default function TaskScreen({ route }) {
         }
       })
       .catch((error) => {
-        alert("Error:", error);
+        alert("Exception:" + error);
       });
     setRefresh(true);
   };
+
+  function dateFormat(date) {
+    date = new Date(date);
+    var d = date.getDate();
+    var m = date.getMonth();
+    var y = date.getFullYear();
+    setDate(`${y}-${m}-${d}`);
+  }
 
   // HandlerFunctions
 
   function showDialog(v = true) {
     setDialogVisible(v);
   }
+  function showCallender(v = true) {
+    setDateVisible(v);
+  }
   const handleAdd = () => {
-    //console.log("item pushed");
     const newTask = {
       title: title,
+      due_date: date,
     };
     create(newTask);
     showDialog(false);
   };
-  function handleDelete(tid) {
+  function handleDelete(tId) {
     Alert.alert(
       "Delete",
       "Are you sure want to delete?",
@@ -124,7 +148,7 @@ export default function TaskScreen({ route }) {
           text: "Cancel",
           style: "cancel",
         },
-        { text: "OK", onPress: () => deleteData(tid) },
+        { text: "OK", onPress: () => deleteData(tId) },
       ],
       {
         cancelable: true,
@@ -138,16 +162,43 @@ export default function TaskScreen({ route }) {
   }
   // Render functions
 
+  function renderCallender() {
+    return (
+      <>
+        {dateVisible && (
+          <DateTimePicker
+            value={new Date()}
+            minimumDate={new Date()}
+            onChange={(event, selectedDate) => {
+              console.log(typeof selectedDate);
+              // dateFormat(selectedDate);
+              showCallender(false);
+            }}
+          />
+        )}
+      </>
+    );
+  }
+
   function renderDialog() {
     return (
       <View>
-        <Dialog.Container visible={visible}>
+        <Dialog.Container
+          visible={visible}
+          onBackdropPress={() => {
+            showDialog(false);
+            setItem(null);
+          }}
+        >
           {item ? (
             <>
               <Dialog.Title>Edit Task</Dialog.Title>
               <Dialog.Input onChangeText={(value) => setTitle(value)}>
                 {item.title}
               </Dialog.Input>
+
+              <Dialog.Description>Due Date : yy,mm,dd</Dialog.Description>
+              <Dialog.Description>{date}</Dialog.Description>
             </>
           ) : (
             <>
@@ -156,12 +207,24 @@ export default function TaskScreen({ route }) {
                 onChangeText={(value) => setTitle(value)}
                 placeholder="Title"
               />
+              <Dialog.Description>Due Date : yy,mm,dd</Dialog.Description>
+              <Dialog.Description>
+                {date ? date.toString() : ""}
+              </Dialog.Description>
             </>
           )}
           <Dialog.Button
+            bold={true}
+            label="Due Date"
+            onPress={() => showCallender(true)}
+          />
+          <Dialog.Button
+            bold={true}
             label="Cancel"
             onPress={() => {
+              setDate(null);
               showDialog(false);
+              setItem(null);
             }}
           />
           <Dialog.Button
@@ -197,6 +260,7 @@ export default function TaskScreen({ route }) {
                 }}
                 onPressEdit={() => {
                   setItem(item);
+                  dateFormat(item.due_date);
                   showDialog(true);
                 }}
               />
@@ -204,6 +268,7 @@ export default function TaskScreen({ route }) {
           />
         )}
       </View>
+      {renderCallender()}
       {renderDialog()}
       <AddButton onPress={showDialog} />
     </Screen>

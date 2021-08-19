@@ -53,7 +53,10 @@ exports.create = async function (req, res) {
     const _task = {
       title: req.body.title,
       due_date: req.body.due_date,
+      ischecked: req.body.ischecked,
     };
+
+    console.log(_task);
 
     await Group.findOneAndUpdate(
       { _id: groupId },
@@ -79,7 +82,7 @@ exports.update = async function (req, res) {
     const groupId = req.params.groupId;
     const taskId = req.params.taskId;
 
-    console.log(groupId, req.body.title, taskId);
+    // console.log(groupId, req.body.title, taskId);
     await Group.findOneAndUpdate(
       {
         _id: groupId, // gId,
@@ -94,6 +97,8 @@ exports.update = async function (req, res) {
       {
         $set: {
           "tasks.$.title": req.body.title + " ",
+          "tasks.$.due_date": req.body.due_date,
+          "tasks.$.ischecked": req.body.ischecked,
         },
       },
       // {"arrayFilters": [{ "outer.id": itemId }]},
@@ -156,7 +161,7 @@ exports.delete = async function (req, res) {
           new ApiResponse(null, "Error deleting", false);
         }
       }
-    ).then((r) => console.log(r));
+    );
   } catch (e) {
     return res.json(new ApiResponse(null, e.message, false));
   }

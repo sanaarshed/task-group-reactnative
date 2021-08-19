@@ -1,14 +1,16 @@
-// TASK ROUTES (END POINTS)
-//GET:     groups/{gr}
+{
+  /*
+   TASK ROUTES (END POINTS)
+  GET:     groups/{gr}
+  GET:     groups/{groupId}/tasks,
+  POST:    groups/{groupId}/tasks
+  GET:     groups/(groupId)/tasks/{taskId}
+  PUT:     groups/{groupId}/tasks/{taskId}
+  DELETE:  groups/{groupId}/tasks/{taskId}
+*/
+}
 
-// GET:     groups/{groupId}/tasks,
-// POST:    groups/{groupId}/tasks
-
-// GET:     groups/(groupId)/tasks/{taskId}
-// PUT:     groups/{groupId}/tasks/{taskId}
-// DELETE:  groups/{groupId}/tasks/{taskId}
-
-"use strict";
+("use strict");
 const controller = require("../Controllers/task");
 
 module.exports = function (app) {

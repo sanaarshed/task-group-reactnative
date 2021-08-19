@@ -2,13 +2,12 @@
 
 module.exports = class TaskService {
   constructor() {
-    (this.apiUrl = "http://192.168.10.10:3000"),
-      (this.endPointGroups = this.apiUrl + "/groups");
-    this.endPointTasks = "/tasks";
+    this.apiUrl = "https://sana-todo-api.herokuapp.com/groups/";
   }
 
   async create(data, groupId) {
-    const url = this.endPointGroups + "/" + groupId + "/tasks";
+    console.log(data);
+    const url = this.apiUrl + groupId + "/tasks";
     var response = await fetch(url, {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -20,7 +19,7 @@ module.exports = class TaskService {
   }
 
   async showAll(groupID) {
-    const url = this.endPointGroups + "/" + groupID + "/tasks";
+    const url = this.apiUrl + groupID + "/tasks";
 
     var res = await fetch(url, {
       method: "GET",

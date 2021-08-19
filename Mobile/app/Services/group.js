@@ -2,8 +2,7 @@
 
 module.exports = class GroupService {
   constructor() {
-    this.apiUrl = "http://192.168.10.10:3000";
-    this.endPoint = this.apiUrl + "/groups";
+    this.endPoint = "https://sana-todo-api.herokuapp.com/groups";
   }
   async create(data = {}) {
     try {
@@ -22,15 +21,14 @@ module.exports = class GroupService {
       console.log("exception in group service create  -->  ", e);
     }
   }
+
   async showAll() {
-    var response = await fetch(
-      this.endPoint
-      // , { headers: { "Content-Type": "application/json" }, }
-    );
+    var response = await fetch(this.endPoint);
 
     var json = await response.json();
     return json;
   }
+
   async update(data, id) {
     const url = this.endPoint + "/" + id;
 
